@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     with open(sys.argv[1], 'r') as yfile:
-        covid_data = yaml.load(yfile)
+        covid_data = yaml.load(yfile, Loader=yaml.SafeLoader)
 
     total_cases = []
     new_cases = []
@@ -35,17 +35,33 @@ if __name__ == "__main__":
         else:
             new_tests.append(data['period_tests'])
 
-    f_new_cases =  plt.figure()
-    plt.bar(times[1:], new_cases[1:])
+    times = numpy.array(times)
+    fig, ax = plt.subplots(2, 2)
+
+    day_width = 86400
+    ax[0,0].bar(times[1:] + day_width/2, new_cases[1:], width=day_width)
     tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
-    plt.xticks(times[1:], tick_labels[1:])
-    plt.ylabel('new cases')
+    ax[0,0].set_xticks(times[1:])
+    ax[0,0].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[0,0].set_ylabel('new cases')
 
-    f_total_cases = plt.figure()
-    plt.step(times, numpy.cumsum(new_cases))
-    plt.ylabel('total cases')
-    plt.xticks(times, tick_labels)
-    plt.grid()
+    ax[0,1].step(times, numpy.cumsum(new_cases))
+    ax[0,1].set_ylabel('total cases')
+    ax[0,1].set_xticks(times[1:])
+    ax[0,1].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[0,1].grid()
 
-    f_new_cases.savefig('new_cases')
-    f_total_cases.savefig('total_cases')
+    ax[1,0].bar(times[1:] + day_width/2, new_tests[1:], width=day_width)
+    tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
+    ax[1,0].set_xticks(times[1:])
+    ax[1,0].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[1,0].set_ylabel('new tests')
+
+    ax[1,1].step(times, numpy.cumsum(new_tests))
+    ax[1,1].set_ylabel('total tests')
+    ax[1,1].set_xticks(times[1:])
+    ax[1,1].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[1,1].grid()
+
+    fig.tight_layout()
+    fig.savefig('covid_stats')
