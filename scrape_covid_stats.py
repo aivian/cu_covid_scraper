@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import datetime
 from html.parser import HTMLParser
 import os
@@ -132,16 +133,38 @@ class DashboardParser(HTMLParser):
             'period_util': self._util_rate,
             }
 
-        last_day = self._tests_end_date - datetime.timedelta(days=1)
-        last_day_id = last_day.strftime('%Y-%m-%d')
-        if last_day_id in current_data:
+
+        start_day_id = daily_data['period_start']
+
+        if 'total_cases' in current_data[start_day_id]:
+            period_start_cases = current_data[start_day_id]['total_cases']
+        else:
+            period_start_cases = 0
+        daily_data['total_cases'] = period_start_cases + self._n_cases
+
+        if 'total_tests' in current_data[start_day_id]:
+            period_start_tests = current_data[start_day_id]['total_tests']
+        else:
+            period_start_tests = 0
+        daily_data['total_tests'] = period_start_tests + self._n_tests
+
+        if len(current_data) > 1:
+            delta = datetime.timedelta(days=365)
+            for day in current_data.keys():
+                delta_day = (
+                    self._tests_end_date -
+                    datetime.datetime.strptime(day, '%Y-%m-%d'))
+                if delta_day < delta:
+                    delta = delta_day
+                    last_day_id = copy.deepcopy(day)
+
             daily_data['daily_cases'] = (
-                daily_data['period_cases'] -
-                current_data[last_day_id]['period_cases']
+                daily_data['total_cases'] -
+                current_data[last_day_id]['total_cases']
             )
             daily_data['daily_tests'] = (
-                daily_data['period_tests'] -
-                current_data[last_day_id]['period_tests']
+                daily_data['total_tests'] -
+                current_data[last_day_id]['total_tests']
             )
 
         current_data[day_id] = daily_data
