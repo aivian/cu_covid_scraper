@@ -109,15 +109,17 @@ class DashboardParser(HTMLParser):
         else:
             start_year = end_year
 
-        start_date = datetime.date(start_year, start_month, start_day)
-        end_date = datetime.date(end_year, end_month, end_day)
+        start_date = datetime.datetime(
+            year=start_year, month=start_month, day=start_day)
+        end_date = datetime.datetime(
+            year=end_year, month=end_month, day=end_day)
 
         return start_date, end_date
 
     def save_data(self, file_path):
         if os.path.exists(file_path):
             with open(file_path, 'r') as yfile:
-                current_data = yaml.load(yfile)
+                current_data = yaml.load(yfile, Loader=yaml.SafeLoader)
         else:
             current_data = {}
 
@@ -135,6 +137,16 @@ class DashboardParser(HTMLParser):
 
 
         start_day_id = daily_data['period_start']
+        if start_day_id not in current_data:
+            start_day = datetime.datetime.strptime(start_day, '%Y-%m-%d')
+            delta = datetime.timedelta(days=365)
+            for day in current_data.keys():
+                delta_day = (
+                    start_day -
+                    datetime.datetime.strptime(day, '%Y-%m-%d'))
+                if delta_day < delta:
+                    delta = delta_day
+                    start_day_id = copy.deepcopy(day)
 
         if 'total_cases' in current_data[start_day_id]:
             period_start_cases = current_data[start_day_id]['total_cases']
