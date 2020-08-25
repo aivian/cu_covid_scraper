@@ -39,7 +39,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(2, 2, constrained_layout=True)
 
     day_width = 86400
-    ax[0,0].bar(times[1:] + day_width/2, new_cases[1:], width=day_width)
+    ax[0,0].bar(times[1:] - day_width/2, new_cases[1:], width=day_width)
     tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
     ax[0,0].set_xticks(times[1:])
     ax[0,0].set_xticklabels(
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         tick_labels[1:], rotation=-45, ha='left', rotation_mode='anchor')
     ax[0,1].grid()
 
-    ax[1,0].bar(times[1:] + day_width/2, new_tests[1:], width=day_width)
+    ax[1,0].bar(times[1:] - day_width/2, new_tests[1:], width=day_width)
     tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
     ax[1,0].set_xticks(times[1:])
     ax[1,0].set_xticklabels(
