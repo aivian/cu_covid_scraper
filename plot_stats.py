@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import datetime
 import sys
 
@@ -39,7 +38,7 @@ if __name__ == "__main__":
     times.append(dates[-1].timestamp())
 
     times = numpy.array(times)
-    fig, ax = plt.subplots(2, 2, constrained_layout=True)
+    fig, ax = plt.subplots(2, 2, constrained_layout=True, figsize=(9,5))
 
     ax[0,0].bar(times[:-1] + day_width/2, new_cases, width=day_width)
     tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
@@ -49,9 +48,9 @@ if __name__ == "__main__":
     ax[0,0].set_ylabel('new cases')
 
     ax[0,1].step(
-        times + day_width,
-        numpy.cumsum([0.0,] + new_cases),
-        where='pre')
+        numpy.hstack((times - day_width, times[-1])),
+        numpy.cumsum([0.0,] + new_cases + [0.0,]),
+        where='post')
     ax[0,1].set_ylabel('total cases')
     ax[0,1].set_xticks(times[1:])
     ax[0,1].set_xticklabels(
@@ -67,9 +66,9 @@ if __name__ == "__main__":
     ax[1,0].set_ylabel('new tests')
 
     ax[1,1].step(
-        times + day_width,
-        numpy.cumsum([0.0,] + new_tests),
-        where='pre')
+        numpy.hstack((times - day_width, times[-1])),
+        numpy.cumsum([0.0,] + new_tests + [0.0,]),
+        where='post')
     ax[1,1].set_ylabel('total tests')
     ax[1,1].set_xticks(times[1:])
     ax[1,1].set_xticklabels(
