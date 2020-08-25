@@ -7,7 +7,7 @@ import numpy
 import yaml
 
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('cairo')
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
@@ -36,32 +36,35 @@ if __name__ == "__main__":
             new_tests.append(data['period_tests'])
 
     times = numpy.array(times)
-    fig, ax = plt.subplots(2, 2)
+    fig, ax = plt.subplots(2, 2, constrained_layout=True)
 
     day_width = 86400
     ax[0,0].bar(times[1:] + day_width/2, new_cases[1:], width=day_width)
     tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
     ax[0,0].set_xticks(times[1:])
-    ax[0,0].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[0,0].set_xticklabels(
+        tick_labels[1:], rotation=-45, ha='left', rotation_mode='anchor')
     ax[0,0].set_ylabel('new cases')
 
     ax[0,1].step(times, numpy.cumsum(new_cases))
     ax[0,1].set_ylabel('total cases')
     ax[0,1].set_xticks(times[1:])
-    ax[0,1].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[0,1].set_xticklabels(
+        tick_labels[1:], rotation=-45, ha='left', rotation_mode='anchor')
     ax[0,1].grid()
 
     ax[1,0].bar(times[1:] + day_width/2, new_tests[1:], width=day_width)
     tick_labels = [d.strftime('%Y-%m-%d') for d in dates]
     ax[1,0].set_xticks(times[1:])
-    ax[1,0].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[1,0].set_xticklabels(
+        tick_labels[1:], rotation=-45, ha='left', rotation_mode='anchor')
     ax[1,0].set_ylabel('new tests')
 
     ax[1,1].step(times, numpy.cumsum(new_tests))
     ax[1,1].set_ylabel('total tests')
     ax[1,1].set_xticks(times[1:])
-    ax[1,1].set_xticklabels(tick_labels[1:], rotation=45)
+    ax[1,1].set_xticklabels(
+        tick_labels[1:], rotation=-45, ha='left', rotation_mode='anchor')
     ax[1,1].grid()
 
-    fig.tight_layout()
-    fig.savefig('covid_stats')
+    fig.savefig('covid_stats.png', format='png')
