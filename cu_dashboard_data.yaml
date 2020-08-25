@@ -1,4 +1,6 @@
 '2020-08-17':
+  daily_csaes: 6
+  daily_tests: 588
   period_cases: 6
   period_end: '2020-08-17'
   period_start: '2020-08-11'
