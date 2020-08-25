@@ -4,7 +4,6 @@ import copy
 import datetime
 from html.parser import HTMLParser
 import os
-import pdb
 import re
 import requests
 import yaml
@@ -78,6 +77,7 @@ class DashboardParser(HTMLParser):
         dates = self._parse_date_range(data)
         self._tests_start_date = dates[0]
         self._tests_end_date = dates[1]
+        self._report_date = dates[1] + datetime.timedelta(days=1)
         self._tests_dates = data
 
         self._mode = None
@@ -123,7 +123,7 @@ class DashboardParser(HTMLParser):
         else:
             current_data = {}
 
-        day_id = self._tests_end_date.strftime('%Y-%m-%d')
+        day_id = self._report_date.strftime('%Y-%m-%d')
         if day_id in current_data:
             return
 
@@ -136,51 +136,47 @@ class DashboardParser(HTMLParser):
             }
 
 
-        start_day_id = daily_data['period_start']
+        start_day = self._tests_start_date# - datetime.timedelta(days=1)
+        start_day_id = start_day.strftime('%Y-%m-%d')
         if start_day_id not in current_data:
-            start_day = datetime.datetime.strptime(start_day, '%Y-%m-%d')
             delta = datetime.timedelta(days=365)
             for day in current_data.keys():
                 delta_day = (
                     start_day -
+                    datetime.timedelta(days=1) -
                     datetime.datetime.strptime(day, '%Y-%m-%d'))
-                if delta_day < delta:
+                if delta_day < delta and delta_day > 0:
                     delta = delta_day
                     start_day_id = copy.deepcopy(day)
 
-        if 'total_cases' in current_data[start_day_id]:
-            period_start_cases = current_data[start_day_id]['total_cases']
-        else:
-            period_start_cases = 0
-        daily_data['total_cases'] = period_start_cases + self._n_cases
+        last_day = datetime.datetime.strptime('1900-01-01', '%Y-%m-%d')
+        for day in current_data.keys():
+            this_day = datetime.datetime.strptime(day, '%Y-%m-%d')
+            if this_day > last_day:
+                last_day = this_day
+        last_day_id = last_day.strftime('%Y-%m-%d')
 
-        if 'total_tests' in current_data[start_day_id]:
-            period_start_tests = current_data[start_day_id]['total_tests']
-        else:
-            period_start_tests = 0
-        daily_data['total_tests'] = period_start_tests + self._n_tests
+        daily_data['daily_cases'] = (
+            daily_data['period_cases'] -
+            current_data[last_day_id]['total_cases'] +
+            current_data[start_day_id]['total_cases']
+        )
+        daily_data['daily_tests'] = (
+            daily_data['period_tests'] -
+            current_data[last_day_id]['total_tests'] +
+            current_data[start_day_id]['total_tests']
+        )
 
-        if len(current_data) > 1:
-            delta = datetime.timedelta(days=365)
-            for day in current_data.keys():
-                delta_day = (
-                    self._tests_end_date -
-                    datetime.datetime.strptime(day, '%Y-%m-%d'))
-                if delta_day < delta:
-                    delta = delta_day
-                    last_day_id = copy.deepcopy(day)
-
-            daily_data['daily_cases'] = (
-                daily_data['total_cases'] -
-                current_data[last_day_id]['total_cases']
-            )
-            daily_data['daily_tests'] = (
-                daily_data['total_tests'] -
-                current_data[last_day_id]['total_tests']
-            )
+        daily_data['total_cases'] = (
+            current_data[start_day_id]['total_cases'] +
+            daily_data['period_cases'])
+        daily_data['total_tests'] = (
+            current_data[start_day_id]['total_tests'] +
+            daily_data['period_tests'])
 
         current_data[day_id] = daily_data
 
+        pdb.set_trace()
         with open(file_path, 'w') as yfile:
             yaml.dump(current_data, yfile)
 
