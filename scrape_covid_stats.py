@@ -176,7 +176,6 @@ class DashboardParser(HTMLParser):
 
         current_data[day_id] = daily_data
 
-        pdb.set_trace()
         with open(file_path, 'w') as yfile:
             yaml.dump(current_data, yfile)
 
