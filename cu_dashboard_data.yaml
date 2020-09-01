@@ -112,7 +112,7 @@
   daily_cases: 0
   daily_tests: 46
   period_cases: 10
-  period_end: '2020-08-24'
+  period_end: '2020-08-23'
   period_start: '2020-08-20'
   period_tests: 1848
   period_util: 0.02
@@ -128,3 +128,53 @@
   period_util: 0.02
   total_cases: 25
   total_tests: 2974
+'2020-08-26':
+  daily_cases: 4
+  daily_tests: 60
+  period_cases: 10
+  period_end: '2020-08-25'
+  period_start: '2020-08-21'
+  period_tests: 644
+  period_util: 0.02
+  total_cases: 29
+  total_tests: 3034
+'2020-08-27':
+  daily_cases: 4
+  daily_tests: 183
+  period_cases: 11
+  period_end: '2020-08-26'
+  period_start: '2020-08-22'
+  period_tests: 354
+  period_util: 0.016
+  total_cases: 33
+  total_tests: 3217
+'2020-08-28':
+  daily_cases: -2
+  daily_tests: -88
+  period_cases: 9
+  period_end: '2020-08-27'
+  period_start: '2020-08-23'
+  period_tests: 220
+  period_util: 0.024
+  total_cases: 31
+  total_tests: 3129
+'2020-08-31':
+  daily_cases: 3
+  daily_tests: 34
+  period_cases: 5
+  period_end: '2020-08-30'
+  period_start: '2020-08-26'
+  period_tests: 128
+  period_util: 0.02
+  total_cases: 34
+  total_tests: 3162
+'2020-09-01':
+  daily_cases: 5
+  daily_tests: 155
+  period_cases: 6
+  period_end: '2020-08-31'
+  period_start: '2020-08-27'
+  period_tests: 100
+  period_util: 0.016
+  total_cases: 39
+  total_tests: 3317
